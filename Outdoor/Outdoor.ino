@@ -38,10 +38,11 @@ void loop() {
     ReadDHT22();
   
     msgStr = "T:"+String(_DHT_Temperature) +";H:"+ String(_DHT_Humidity)+";P:"+ String(_pressure);
-    msgStr.toCharArray(msgCharArray, 12);
+    msgStr.toCharArray(msgCharArray, 32);
   /// Sent the data wirelessly to the indoor unit
     for (int i = 0; i <= 3; i++) {           // Send the data 3 times
       Serial.println("Start send : "+ msgStr);
+      
       radio.write(&msgCharArray, sizeof(msgCharArray));
       Serial.println("Sent");
       delay(50);
@@ -54,6 +55,22 @@ void loop() {
     }
 }
 
+/*void SendMsg(string msg)
+{
+    //msgStr = "T:"+String(_DHT_Temperature) +";H:"+ String(_DHT_Humidity)+";P:"+ String(_pressure);
+   
+    msg.toCharArray(msgCharArray, msgBufSize);
+    
+  /// Sent the data wirelessly to the indoor unit
+    for (int i = 0; i <= 3; i++) {           // Send the data 3 times
+      Serial.println("Start send : "+ msg);
+      
+      radio.write(&msgCharArray, sizeof(msgCharArray));
+      Serial.println("Sent");
+      delay(50);
+    }
+}
+*/
 void SetupNRF24L01()
 {
    radio.begin();
