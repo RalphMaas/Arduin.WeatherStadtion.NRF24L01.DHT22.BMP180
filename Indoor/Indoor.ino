@@ -27,7 +27,7 @@ RF24 radio(10, 9); // CE, CSN
 const byte address[6] = "00001";
 
 char text[32] = "";
-String rtcTime, rtcDate;
+String rtcTime, rtcDate, tempValue, humValue, presValue;
 int draw_state = 0;
 unsigned long previousMillis = 0;
 long interval = 5000;
@@ -49,9 +49,15 @@ void setup() {
 void loop() {
   if (radio.available()) {
     radio.read(&text, sizeof(text)); // Read incoming data
-    Serial.println(text);
-  //  outTemp = String(text[0]) + String(text[1]) + char(176) + "C"; // Outdoor Temperature
-  //  outHum = String(text[2]) + String(text[3]) + "%"; // Outdoor Humidity
+    //Message example:  temperature;humidity;air pressure -> 26.30;48.10;1021.04
+
+    tempValue = getMsgValue(text,';',0);
+    humValue = getMsgValue(text,';',1);
+    presValue = getMsgValue(text,';',2);
+
+    Serial.println("Temp: " + tempValue);
+    Serial.println("Hum: " + humValue);
+    Serial.println("Press: " + presValue);
   }
  
  unsigned long currentMillis = millis();
@@ -103,15 +109,43 @@ void DisplayTemperatureAndHumidity()
 {
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("Temp & Humi");
+    lcd.print("Temp :");
+    lcd.print(tempValue);
+    lcd.print(" C");
+
+    lcd.setCursor(0,1);
+    lcd.print("Hum  :");
+    lcd.print(humValue);
+    lcd.print(" %");
 
 } 
 
 void DisplayPressure()
 {
     lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Pressure");
+     lcd.setCursor(2,0);
+    lcd.print("Air pressure");
+     lcd.setCursor(3,1);
+    lcd.print(presValue);
+    lcd.print(" mHg");
+
+}
+
+String getMsgValue(String data, char separator, int index)
+{
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length()-1;
+
+  for(int i=0; i<=maxIndex && found<=index; i++){
+    if(data.charAt(i)==separator || i==maxIndex){
+        found++;
+        strIndex[0] = strIndex[1]+1;
+        strIndex[1] = (i == maxIndex) ? i+1 : i;
+    }
+  }
+
+  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 /*
 void drawDate() {
