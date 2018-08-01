@@ -24,7 +24,8 @@ DS3231  rtc(SDA, SCL);
 
 //NRF24L01
 RF24 radio(10, 9); // CE, CSN
-const byte address[6] = "00001";
+const uint64_t pipes[9] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0E2LL, 0xF0F0F0F0E3LL,0xF0F0F0F0E4LL,0xF0F0F0F0E5LL,0xF0F0F0F0E6LL,0xF0F0F0F0E7LL,0xF0F0F0F0E9LL,0xF0F0F0F0E9LL };
+//const byte address[6] = "00001";
 
 char text[32] = "";
 String rtcTime, rtcDate, tempValue, humValue, presValue;
@@ -40,8 +41,12 @@ void setup() {
    lcd.home();
 
    radio.begin();
-   radio.openReadingPipe(0, address);
-   radio.setPALevel(RF24_PA_MIN);
+   radio.setDataRate(RF24_250KBPS);
+   radio.openReadingPipe(1, pipes[1]);
+   //radio.openReadingPipe(2, pipes[2]);
+
+   //radio.openReadingPipe(0, address);
+   //radio.setPALevel(RF24_PA_MIN);
    radio.startListening();
  
   rtc.begin();
